@@ -6,20 +6,35 @@
 //
 
 import SwiftUI
-
+import AVFoundation
 struct ContentView: View {
     
     @State var isDisableRec = false
     @State var isDisableStop = true
     @State var action: Int?
     
+    
     var body: some View {
         NavigationView{
             VStack{
                 Button(action: {
+                    var audioRecorder: AVAudioRecorder!
                     isDisableRec = true
                     isDisableStop = false
-                    print("I am disable")
+                    
+                    let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true)[0] as String
+                    let recordingName = "recordedVoice.wav"
+                    let pathArray = [dirPath, recordingName]
+                    let filePath = URL(string: pathArray.joined(separator: "/"))
+
+                    let session = AVAudioSession.sharedInstance()
+                    try! session.setCategory(AVAudioSession.Category.playAndRecord, mode: AVAudioSession.Mode.default, options: AVAudioSession.CategoryOptions.defaultToSpeaker)
+
+                    try! audioRecorder = AVAudioRecorder(url: filePath!, settings: [:])
+                    audioRecorder.isMeteringEnabled = true
+                    audioRecorder.prepareToRecord()
+                    audioRecorder.record()
+                    
                 }) {
                     Image("record")
                         .padding()
@@ -41,14 +56,7 @@ struct ContentView: View {
                 }
                 Button(action: {self.action = 1; isDisableRec = false
                         isDisableStop = true}, label: {
-                    Image("stop")
-                        .padding()
-                        .frame(width: 65, height: 65)
-                        .background(Color.green)
-                        .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                        .foregroundColor(Color.black)
-                        .foregroundColor(.black)
-                        .shadow(color: .green, radius: 5)
+                    CustomBtn(icon: "stop", wid: 75, hei: 75)
                 }).disabled(isDisableStop)
             }
         }
