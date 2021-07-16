@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct playback: View {
+    
+    var audioLink: URL?
     var body: some View {
         
         VStack{
@@ -57,6 +60,6 @@ struct playback: View {
 
 struct playback_Previews: PreviewProvider {
     static var previews: some View {
-        playback()
+        playback(audioLink: URL(string: "HHH")!)
     }
 }

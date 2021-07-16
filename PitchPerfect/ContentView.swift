@@ -12,13 +12,14 @@ struct ContentView: View {
     @State var isDisableRec = false
     @State var isDisableStop = true
     @State var action: Int?
+    @State var audioRecorder: AVAudioRecorder?
     
     
     var body: some View {
         NavigationView{
             VStack{
                 Button(action: {
-                    var audioRecorder: AVAudioRecorder!
+                    
                     isDisableRec = true
                     isDisableStop = false
                     
@@ -31,9 +32,9 @@ struct ContentView: View {
                     try! session.setCategory(AVAudioSession.Category.playAndRecord, mode: AVAudioSession.Mode.default, options: AVAudioSession.CategoryOptions.defaultToSpeaker)
 
                     try! audioRecorder = AVAudioRecorder(url: filePath!, settings: [:])
-                    audioRecorder.isMeteringEnabled = true
-                    audioRecorder.prepareToRecord()
-                    audioRecorder.record()
+                    audioRecorder!.isMeteringEnabled = true
+                    audioRecorder!.prepareToRecord()
+                    audioRecorder!.record()
                     
                 }) {
                     Image("record")
@@ -51,12 +52,20 @@ struct ContentView: View {
                     .padding(.bottom)
                 
                 NavigationLink(
-                    destination: playback(), tag: 1, selection: $action) {
+                    destination: playback(audioLink: self.audioRecorder?.url), tag: 1, selection: $action) {
                     EmptyView()
                 }
-                Button(action: {self.action = 1; isDisableRec = false
-                        isDisableStop = true}, label: {
-                    CustomBtn(icon: "stop", wid: 75, hei: 75)
+                Button(
+                    action:{
+                        self.action = 1;
+                        isDisableRec = false
+                        isDisableStop = true
+                        audioRecorder!.stop()
+                        let audioSession = AVAudioSession.sharedInstance()
+                        try! audioSession.setActive(false)
+                    },
+                    label:{
+                        CustomBtn(icon: "stop", wid: 75, hei: 75)
                 }).disabled(isDisableStop)
             }
         }
