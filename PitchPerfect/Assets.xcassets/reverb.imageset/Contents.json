@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "reverb.png",
+      "filename" : "Reverb.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "reverb@2x.png",
+      "filename" : "Reverb@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "reverb@3x.png",
+      "filename" : "Reverb@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
