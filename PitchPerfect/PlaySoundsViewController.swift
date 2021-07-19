@@ -11,12 +11,28 @@ import AVFoundation
 var audioEngine: AVAudioEngine!
 var audioFile: AVAudioFile!
 var audioPlayerNode: AVAudioPlayerNode!
-var recordedAudioURL: URL!
 var stopTimer: Timer!
 
+// MARK: PlayingState (raw values correspond to sender tags)
+    
+    enum PlayingState { case playing, notPlaying }
 
-func playSound(rate: Float? = nil, pitch: Float? = nil, echo: Bool = false, reverb: Bool = false) {
+// MARK: Audio Functions
+func setupAudio(audio: URL) {
+       // initialize (recording) audio file
+       do {
+           audioFile = try AVAudioFile(forReading: audio as URL)
+       } catch {
+           print("There is no audio to play")
+       }
+   }
+
+func playSound(audio: URL, rate: Float? = nil, pitch: Float? = nil, echo: Bool = false, reverb: Bool = false) {
         
+    
+        //Setup Audio
+        setupAudio(audio: audio)
+    
         // initialize audio engine components
         audioEngine = AVAudioEngine()
         
@@ -58,8 +74,8 @@ func playSound(rate: Float? = nil, pitch: Float? = nil, echo: Bool = false, reve
         
         // schedule to play and start the engine!
         audioPlayerNode.stop()
-        audioPlayerNode.scheduleFile(audioFile, at: nil) {
-            
+//        audioPlayerNode.scheduleFile(audioFile, at: nil) {
+//            
 //        var delayInSeconds: Double = 0
 //
 //        if let lastRenderTime = audioPlayerNode.lastRenderTime, let playerTime = audioPlayerNode.playerTime(forNodeTime: lastRenderTime) {
@@ -70,11 +86,11 @@ func playSound(rate: Float? = nil, pitch: Float? = nil, echo: Bool = false, reve
 //                delayInSeconds = Double(audioFile.length - playerTime.sampleTime) / Double(audioFile.processingFormat.sampleRate)
 //            }
 //        }
-            
+//            
 //            // schedule a stop timer for when audio finishes playing
 //            stopTimer = Timer(timeInterval: delayInSeconds, target: self, selector: #selector(stopAudio), userInfo: nil, repeats: false)
-//            RunLoop.main.add(self.stopTimer!, forMode: RunLoop.Mode.default)
-        }
+//            RunLoop.main.add(stopTimer!, forMode: RunLoop.Mode.default)
+//        }
         
         do {
             try audioEngine.start()
@@ -96,23 +112,34 @@ func connectAudioNodes(_ nodes: AVAudioNode...) {
 }
 
 
-//func stopAudio() {
-//
-//       if let audioPlayerNode = audioPlayerNode {
-//           audioPlayerNode.stop()
-//       }
-//
-//       if let stopTimer = stopTimer {
-//           stopTimer.invalidate()
-//       }
-//
+func stopAudio() {
+
+       if let audioPlayerNode = audioPlayerNode {
+           audioPlayerNode.stop()
+       }
+
+       if let stopTimer = stopTimer {
+           stopTimer.invalidate()
+       }
+
 //       configureUI(.notPlaying)
-//
-//       if let audioEngine = audioEngine {
-//           audioEngine.stop()
-//           audioEngine.reset()
-//       }
-//   }
+
+       if let audioEngine = audioEngine {
+           audioEngine.stop()
+           audioEngine.reset()
+       }
+   }
+
+//func configureUI(_ playState: PlayingState) {
+//        switch(playState) {
+//        case .playing:
+//            setPlayButtonsEnabled(false)
+//            stopButton.isEnabled = true
+//        case .notPlaying:
+//            setPlayButtonsEnabled(true)
+//            stopButton.isEnabled = false
+//        }
+//    }
 
 //func showAlert(_ title: String, message: String) {
 //        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
